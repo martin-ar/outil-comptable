@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Outil Comptable</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="text-center" id="header">
+      <h1 class="display-2">Outil de comptabilité</h1>
+      <p class="description lead bg-light p-6">
+        Vous pouvez ajouter des commandes sur les champs ci-desous et les
+        consulter ou les supprimer depuis la table
+      </p>
+    </div>
+    <div class="container">
+      <form>
+        <div class="form row">
+          <div class="form-group col-4">
+            <label for="date">Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="date"
+              placeholder="date"
+            />
+          </div>
+
+          <div class="form-group col-6">
+            <label for="clients">Clients</label>
+            <select class="form-control" id="clients">
+              <option>--Sélectionner un client--</option>
+            </select>
+          </div>
+        </div>
+        <div class="form row">
+          <div class="form-group col-5">
+            <label for="produits">Produit</label>
+            <select class="form-control" onchange="getPrice(this.value)" id="produits" >
+              <option>--Sélectionner un produit--</option>
+            </select>
+          </div>
+
+          <div class="form-group col-3">
+            <label for="quantity">Quantité</label>
+            <input
+              type="text"
+              class="form-control"
+              id="quantity"
+              placeholder="entre 1 et 999"
+              pattern="^[1-9]\d{0,2}"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group col-2">
+            <label for="item-price">Prix unitaire (€)</label>
+            <input
+              type="text"
+              class="form-control"
+              id="item-price"
+              placeholder="0.00"
+              readonly  
+            />
+          </div>
+        </div>  
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-lg mb-3 " onclick="sendCall()">Ajouter</button>
+          </div>
+      </form>
+    </div>
+    <div class="span"></div>
+    <div class="container section">
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">ordre</th>
+            <th scope="col">Date</th>
+            <th scope="col">Client</th>
+            <th scope="col">Produit</th>
+            <th scope="col">Quantité</th>
+            <th scope="col">Prix Unitaire</th>
+            <th scope="col">Total</th>
+            <th scope="col">Supprimer</th>
+          </tr>
+        </thead>
+        <tbody id="commandes">
+          <tr  >
+            <td>0</td>
+            <td>01/01/1899</td>
+            <td>Client 1</td>
+            <td>paillettes</td>
+            <td>null</td>
+            <td>null</td>
+            <td>null</td>
+            <td>
+              <button type="button" class="btn btn-danger">
+                <object class="trash-bin" data="img/trash-bin.svg"></object>
+              </button>
+            </td>
+          </tr>
+         
+        <!-- </tbody>
+      </table>
+      <div class="d-flex flex-column align-items-center">
+      <p>Nombre de commandes : 0</p>
+      <p>Total : 0.00€</p>
+    </div> -->
+    </div>
+    <script>
+    //fonctions du formulaire :
+
+      //1. récuperer les clients depuis la bd.
+      $.get("customers.php", function (data) {
+        $("#clients").html(data);
+      });
+
+      //2. récuperer les produits depuis la bd.
+      $.get("items.php", function (data) {
+        $("#produits").html(data);
+      });
+      
+      //3. ajouter le prix unitaire du produit selectioné 
+      function getPrice(prix){
+        document.querySelector("#item-price").value=prix + " €";
+      };
+      //4. récuperer/supprimer une commande
+      function refreshCalls(){
+      $.get("calls.php", function (data) {
+          $("#commandes").html(data);
+        });
+      }
+      //4. envoyer la commande à la base de données``
+      function sendCall(){
+
+        $.post('calls.php',{
+          call_date: $("#date").val(),
+          customer_id: $("#clients").val(),
+          item_price: $("#produits").val(),
+          item_quantity: $("#quantity").val()
+        },function(data){
+            alert(data);
+        })
+        refreshCalls.call();
+
+      }
+      //5. supprimer une commande depuis la table
+      function deleteCall(id){
+        $.ajax({
+            url: 'calls.php?id='+id,
+            type : 'DELETE',
+            success: function(data){
+                alert(data);
+
+            }
+        })
+        refreshCalls.call();
+      }
+    
+    refreshCalls.call();
+
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+  </body>
+</html>
