@@ -15,16 +15,16 @@
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-    $html = "<option value='' class='placeholder'>--Sélectionner un produit--</option>";
+    $html = "<option name='0.00' class='placeholder'>--Sélectionner un produit--</option>";
 
     $i = 0;
 
     while($i<count($items)){
 
       $id = $items[$i]["item_id"];
-      $produit =$items[$i]["item_name"];
-      $prix = $items[$i]["unit_price"];
-      $html = $html."<option name='$produit' id='produit_$id' value='$prix'>$produit</option>";
+      $name =$items[$i]["item_name"];
+      $price = $items[$i]["unit_price"];
+      $html = $html."<option id='produit_$id' name='$price' value='$name'>$name</option>";
       $i++;
     }
     echo $html;

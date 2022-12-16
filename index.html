@@ -12,7 +12,7 @@
   <body>
     <div class="text-center" id="header">
       <h1 class="display-2">Outil de comptabilité</h1>
-      <p class="description lead bg-light p-6">
+      <p class="description lead bg-light pb-6">
         Vous pouvez ajouter des commandes sur les champs ci-desous et les
         consulter ou les supprimer depuis la table
       </p>
@@ -40,7 +40,7 @@
         <div class="form row">
           <div class="form-group col-5">
             <label for="produits">Produit</label>
-            <select class="form-control" onchange="getPrice(this.value)" id="produits" >
+            <select class="form-control" onchange="getPrice()" id="produits">
               <option>--Sélectionner un produit--</option>
             </select>
           </div>
@@ -48,12 +48,15 @@
           <div class="form-group col-3">
             <label for="quantity">Quantité</label>
             <input
-              type="text"
+              type="number"
               class="form-control"
               id="quantity"
               placeholder="entre 1 et 999"
               pattern="^[1-9]\d{0,2}"
+              min="1" max="999"
+              maxlength="3"
               autocomplete="off"
+              required
             />
           </div>
 
@@ -78,7 +81,7 @@
       <table class="table table-striped">
         <thead class="thead-dark">
           <tr>
-            <th scope="col">ordre</th>
+            <th scope="col">Ordre</th>
             <th scope="col">Date</th>
             <th scope="col">Client</th>
             <th scope="col">Produit</th>
@@ -89,27 +92,20 @@
           </tr>
         </thead>
         <tbody id="commandes">
-          <tr  >
+          <tr>
             <td>0</td>
-            <td>01/01/1899</td>
-            <td>Client 1</td>
-            <td>paillettes</td>
-            <td>null</td>
-            <td>null</td>
-            <td>null</td>
+            <td>date</td>
+            <td>client</td>
+            <td>produit</td>
+            <td>quantite</td>
+            <td>prix</td>
+            <td>total</td>
             <td>
               <button type="button" class="btn btn-danger">
                 <object class="trash-bin" data="img/trash-bin.svg"></object>
               </button>
             </td>
           </tr>
-         
-        <!-- </tbody>
-      </table>
-      <div class="d-flex flex-column align-items-center">
-      <p>Nombre de commandes : 0</p>
-      <p>Total : 0.00€</p>
-    </div> -->
     </div>
     <script>
     //fonctions du formulaire :
@@ -124,31 +120,36 @@
         $("#produits").html(data);
       });
       
-      //3. ajouter le prix unitaire du produit selectioné 
-      function getPrice(prix){
-        document.querySelector("#item-price").value=prix + " €";
+      //3. ajouter le prix unitaire du produit selectioné.
+      function getPrice(){
+        var e = document.getElementById("produits");
+        var strAtt = e.options[e.selectedIndex].getAttribute('name');
+        document.querySelector("#item-price").value=strAtt + " €";
       };
-      //4. récuperer/supprimer une commande
+
+      //4. récuperer les commande depuis la BD.
       function refreshCalls(){
       $.get("calls.php", function (data) {
           $("#commandes").html(data);
         });
       }
-      //4. envoyer la commande à la base de données``
-      function sendCall(){
 
+      //5. envoyer la commande à la base de données, ressemblent les infos du formulaire.
+      function sendCall(){
+        
         $.post('calls.php',{
           call_date: $("#date").val(),
           customer_id: $("#clients").val(),
-          item_price: $("#produits").val(),
-          item_quantity: $("#quantity").val()
+          item_name: $("#produits").val(),
+          item_quantity: $("#quantity").val(),
+          item_price: $("#item-price").val()
         },function(data){
-            alert(data);
+          alert(data);
         })
-        refreshCalls.call();
+        setTimeout(refreshCalls,1);
 
       }
-      //5. supprimer une commande depuis la table
+      //6. supprimer une commande depuis la table
       function deleteCall(id){
         $.ajax({
             url: 'calls.php?id='+id,
@@ -158,7 +159,7 @@
 
             }
         })
-        refreshCalls.call();
+        setTimeout(refreshCalls,1);
       }
     
     refreshCalls.call();
