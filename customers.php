@@ -1,5 +1,5 @@
 <?php
-
+  //ce fichier PHP ramène le nom et prénom des clients dans le champ "client" du formulaire 
   include  'db.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
