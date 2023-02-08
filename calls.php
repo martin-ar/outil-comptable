@@ -36,8 +36,8 @@
           <td>$client</td>
           <td>$item</td>
           <td>$quantity</td>
-          <td>$price</td>
-          <td>$sale_income € (TTC)</td>
+          <td>$price € (HT)</td>
+          <td>$sale_income € (HT)</td>
           <td>
             <button type='button' class='btn btn-danger' onclick='deleteCall($id)'>
               <span><object data='trash-bin.svg'></object></span>
@@ -55,18 +55,20 @@
 
       if($method=='POST'){
 
-        //vérifier que tous les champs soient bien remplis
+        //condition pour vérifier que tous les champs soient bien remplis
 
         if(empty($_POST['call_date']) || empty($_POST['customer_id']) || empty($_POST['item_name'])
         || empty($_POST['item_price'])|| empty($_POST['item_quantity'])){
           
           echo "Merci de bien remplir tous les champs ;)";
+
         }else{
           $date = $_POST['call_date'];
           $client = $_POST['customer_id'];
           $item = $_POST['item_name'];
           $price = $_POST['item_price'];
           $quantity = $_POST['item_quantity'];
+          //vérification de quantité introduit dans le formulaire
           if ($quantity > 999) {
             echo 'La quantité ne doit pas dépasser les 999 unités.';
           }else{
