@@ -6,7 +6,7 @@
 
   if($method=='GET'){
     
-      // la requete SQL selectione seulement les produits disponibles
+      // la requête SQL sélectionne seulement les produits disponibles
     $sql = "SELECT item_id,item_name,unit_price FROM items WHERE is_available=1";
     
     $stmt = $conn->prepare($sql);
